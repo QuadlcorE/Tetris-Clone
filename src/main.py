@@ -24,13 +24,6 @@ C_BLACK = pygame.Color("black")
 
 DROPPED = pygame.USEREVENT + 1
 
-
-buffer = [[0, 0, 0],
-          [0, 0, 0], 
-          [0, 0, 0],
-          [0, 0, 0] 
-           ]
-
 Box_shape = [[0, 0, 0],
              [0, 0, 0],
              [0, 1, 0],
@@ -61,22 +54,8 @@ grid = [ [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   # 1
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],   # 20
         ]
 
-def clear_buffer():
-    for _ in range(len(buffer)):
-        for square in range(len(buffer[_])):
-            buffer[_][square] = 0
+player_grid = grid
 
-def set_buffer_left(x,y):
-    for _ in range(len(buffer)):
-        buffer[_][0]=grid[y+_][x-1]
-    print(buffer)
-
-def buffer_grid_update(x,y):
-    for _ in range(len(buffer)):
-        for s in range(len(buffer[_])):
-            if (s == 0 or s == 2) and not (buffer[_][s] == 0):
-                grid[y+_][x+s] = buffer[_][s]
-    clear_buffer()
 
 #------------------PLAYER FUNCTIONS---------------------------
 class player:
@@ -93,7 +72,7 @@ class player:
             i, j = 0, 0
             for _ in range(len(self.shape)):
                 for square in range(len(self.shape[_])):
-                    grid[self.y+i][self.x+j] = self.shape[_][square]        # Reading from the shape to the grid
+                    player_grid[self.y+i][self.x+j] = self.shape[_][square]        # Reading from the shape to the grid
                     j+=1
                 j=0
                 i+=1
@@ -140,25 +119,25 @@ class player:
                 for _ in range(len(self.shape)):
                     for square in range(len(self.shape[_])):
                         if grid[self.y+i][self.x+j] == 1 and self.x+j < 10:
-                            grid[self.y+i][self.x+j] = 0
+                            player_grid[self.y+i][self.x+j] = 0
                         j+=1
                     j=0
                     i+=1
                 self.x -=1
     
-    def player_pos_check_left(self):
+    def player_pos_check_right(self):
         i, j = 0, 0
         for _ in range(len(self.shape)):
             for square in range(len(self.shape[_])):
                 if self.shape[i][j] == 1:
-                    if j-1 >= 0:
-                        if self.shape[i][j-1] == 0:
-                            if grid[self.y+i][self.x+j-1] == 1:
+                    if j+1 <= 9:
+                        if self.shape[i][j+1] == 0:
+                            if grid[self.y+i][self.x+j+1] == 1:
                                 return False
                     else:
-                        if grid[self.y+i][self.x+j-1] == 1:
+                        if grid[self.y+i][self.x+j+1] == 1:
                                 return False
-                j+=1
+                j-=1
             j=0
             i+=1
         return True
@@ -170,7 +149,7 @@ class player:
                 for _ in range(len(self.shape)):
                     for square in range(len(self.shape[_])):
                         if grid[self.y+i][self.x+j] == 1 and self.x >= 0:
-                            grid[self.y+i][self.x+j-1] = 0
+                            player_grid[self.y+i][self.x+j-1] = 0
                         j+=1
                     j=0
                     i+=1
@@ -219,6 +198,24 @@ def draw_grid(screen):
         x_coordinate = PLAY_AREA[0]
         y_coordinate += BLOCK_HEIGHT
         i+=1
+
+def draw_player_grid(screen):
+    i, j = 0, 0
+    y_coordinate = PLAY_AREA[1]
+    x_coordinate = PLAY_AREA[0]
+    
+    for _ in range(len(player_grid)):
+        for square in range(len(player_grid[_])):
+            if player_grid[i][j] == 1:
+                pygame.draw.rect(screen, C_WHITE, pygame.Rect( (x_coordinate, y_coordinate), (BLOCK_HEIGHT, BLOCK_HEIGHT) ))
+                player_grid[i][j] = 0
+            x_coordinate += BLOCK_HEIGHT
+            j+=1
+        j=0
+        x_coordinate = PLAY_AREA[0]
+        y_coordinate += BLOCK_HEIGHT
+        i+=1
+    
 
 def draw_play_area(screen):
     screen.fill(C_BLACK)
