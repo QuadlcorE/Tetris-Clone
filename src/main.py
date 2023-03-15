@@ -114,7 +114,6 @@ class player:
     def move_left(self):
         if self.active == True:
             if self.x > 0 and self.player_pos_check_left() == True:
-                set_buffer_left(self.x, self.y)
                 i, j = 0, 0
                 for _ in range(len(self.shape)):
                     for square in range(len(self.shape[_])):
@@ -262,7 +261,7 @@ def main():
         
         player1.player_gravity()
         player1.player_update()
-        buffer_grid_update(player1.x, player1.y)
+        
  
 
         
