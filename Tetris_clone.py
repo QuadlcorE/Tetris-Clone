@@ -5,8 +5,33 @@
 ################################################
 
 import pygame, os, random
+import file_handling
+from enum import Enum
 
 pygame.font.init()
+
+#------------------GAME STATES-----------------------------------
+class GameStates(Enum):
+    MainMenu = 1
+    PauseMenu = 2
+    GameOverMenu = 3
+    GamePlay = 4
+
+current_state = GameStates.MainMenu
+
+#------------------GAME STATE ACTIONS----------------------------
+def state_mainmenu():
+    ...
+
+def state_pausemenu():
+    ...
+
+def state_gameovermenu():
+    ...
+
+def state_gameplay(WIN, player1, clock):
+    
+    ...
 
 #------------------GAME VALUES----------------------------------- 
 WIDTH ,HEIGHT= 250, 310
@@ -20,7 +45,7 @@ Y_SQUARES = 20
 PLAY_WIDTH = BLOCK_HEIGHT *X_SQUARES
 PLAY_HEIGHT = BLOCK_HEIGHT*Y_SQUARES
 
-LEFT_OFFSET, RIGHT_OFFSET, TOP_OFFSET, BOTTOM_OFFSET = 50, 50, 30, 50
+LEFT_OFFSET, RIGHT_OFFSET, TOP_OFFSET, BOTTOM_OFFSET = 50, 50, 70, 50
 CENTRAL_POS = WIDTH/2
 
 PLAY_AREA = (LEFT_OFFSET, TOP_OFFSET, 
@@ -39,6 +64,7 @@ DROPPED = pygame.USEREVENT + 1
 FONT = pygame.font.Font(os.path.join("ARCADECLASSIC.TTF"), 16)
 FONT_2 = pygame.font.Font(os.path.join("ARCADECLASSIC.TTF"), 32)
 SCORE_X, SCORE_Y = WIDTH-RIGHT_OFFSET-10, TOP_OFFSET+20
+PAUSE_X, PAUSE_Y = WIDTH-RIGHT_OFFSET-20, TOP_OFFSET
 
 S_S = [[0, 1, 1],
        [1, 1, 0],
@@ -349,6 +375,8 @@ def draw_score(screen):
 def draw_game_over(screen):
     screen.blit(FONT_2.render("Game Over", 0, C_WHITE), (CENTRAL_POS-80, HEIGHT-BOTTOM_OFFSET))
 
+def draw_pause_symbol(screen):
+    screen.blit(FONT_2.render("PAUSED", 0, C_WHITE), (PAUSE_X, PAUSE_Y))
 #---------------------SPEED FUNCTIONS--------------------------
 
 timer = 1
@@ -379,48 +407,80 @@ def main():
     
     GameOver = False
     
+    current_state = GameStates.GamePlay
+
     # Main game loop
     while GameOver == False:
-        draw_play_area(WIN)    
-        
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    player1.move_left()
-                if event.key == pygame.K_RIGHT:
-                    player1.move_right()
-                if event.key == pygame.K_UP:
-                    player1.player_rotate()
-                if event.key == pygame.K_DOWN:
-                    player1.move_down()
-                if event.key == pygame.K_SPACE:
-                    print(grid)
-                    ...
-            if event.type == DROPPED:
-                increase_speed()
-                multiplier = 1
-                player1.last_pos()
-                grid_to_player_grid()
-                player1 = player()
-                if player1.game_over(WIN) == True:
-                    pygame.display.update()
-                    GameOver = True
-            
-            if event.type == pygame.QUIT:
-                exit()
-                
-        player1.player_gravity(get_speed())
-        player1.player_update()
-        
-            
-        draw_grid(WIN)
-        draw_player_grid(WIN)
-        drop_grid(clear_complete_grids())
-        draw_score(WIN)
-        clock.tick(FPS)
-        
-        pygame.display.update()
+       match current_state:
+            case GameStates.GamePlay:
 
+#---------------GAME PLAY LOGIC----------------------------------------------------------
+                draw_play_area(WIN)    
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            player1.move_left()
+                        if event.key == pygame.K_RIGHT:
+                            player1.move_right()
+                        if event.key == pygame.K_UP:
+                            player1.player_rotate()
+                        if event.key == pygame.K_DOWN:
+                            player1.move_down()
+                        if event.key == pygame.K_p:
+                            current_state = GameStates.PauseMenu
+                        if event.key == pygame.K_SPACE:
+                            print(grid)
+                            ...
+                    if event.type == DROPPED:
+                        increase_speed()
+                        multiplier = 1
+                        player1.last_pos()
+                        grid_to_player_grid()
+                        player1 = player()
+                        if player1.game_over(WIN) == True:
+                            pygame.display.update()
+                            GameOver = True
+                    
+                    if event.type == pygame.QUIT:
+                        exit()
+                        
+                player1.player_gravity(get_speed())
+                player1.player_update()
+                
+                    
+                draw_grid(WIN)
+                draw_player_grid(WIN)
+                drop_grid(clear_complete_grids())
+                draw_score(WIN)
+                clock.tick(FPS)
+                
+                pygame.display.update()
+
+            case GameStates.MainMenu:
+               ...
+               
+#-------------------PAUSE MENU-------------------------------------
+            case GameStates.PauseMenu:
+               draw_pause_symbol(WIN)
+               pygame.display.update()
+               paused = True
+               while True:
+                    for event in pygame.event.get():
+                       if event.type == pygame.QUIT:
+                            exit()
+                       if event.type == pygame.KEYDOWN:
+                           if event.key == pygame.K_p:
+                               current_state = GameStates.GamePlay
+                               paused = False
+                    
+                    if not paused:
+                        break
+               
+               state_pausemenu()
+
+            case GameStates.GameOverMenu:
+               state_gameovermenu()
 
     while True:
         for  event in pygame.event.get():
