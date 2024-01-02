@@ -57,8 +57,6 @@ FPS = 25
 
 POINTS = 5
 
-HIGHSCORE = 5
-
 C_WHITE = pygame.Color("white")
 C_BLACK = pygame.Color("black")
 
@@ -73,7 +71,8 @@ PAUSE_X, PAUSE_Y = WIDTH-RIGHT_OFFSET-10, 20
 HIGHSCORE_X, HIGHSCORE_Y = 20, 30
 MAIN_MENU_TEXT_X, MAIN_MENU_TEXT_Y = CENTRAL_POS_X-50, CENTRAL_POS_Y-30
 HELP_TEXT_X, HELP_TEXT_Y = LEFT_OFFSET, CENTRAL_POS_Y+40
-FINAL_SCORE_TEXT_X, FINAL_SCORE_TEXT_Y = CENTRAL_POS_X, CENTRAL_POS_Y
+GAME_OVER_TEXT_X, GAME_OVER_TEXT_Y = CENTRAL_POS_X-70, CENTRAL_POS_Y-20
+FINAL_SCORE_TEXT_X, FINAL_SCORE_TEXT_Y = CENTRAL_POS_X-30, CENTRAL_POS_Y+40
 
 S_S = [[0, 1, 1],
        [1, 1, 0],
@@ -385,9 +384,9 @@ class player:
 
        
 #--------------------SCORE FUNCTIONS----------------------------
-
 multiplier = 1
 score = 0
+HighScore = 0
 
 def reset_score():
     global score
@@ -397,6 +396,10 @@ def increase_score(multiplier=1):
     global score 
     score += multiplier*POINTS
 
+def set_new_highscore(score):
+    global HighScore
+    if score>HighScore:
+        HighScore = score
 
            
 #---------------------DRAW FUNCTIONS-----------------------------
@@ -439,12 +442,13 @@ def draw_score(screen):
     screen.blit(FONT.render(str(score), 0, C_WHITE), (SCORE_X, SCORE_Y+20))
 
 def draw_highscore(screen):
-    screen.blit(FONT.render(f"HIGHSCORE   {HIGHSCORE}", 0, C_WHITE), (HIGHSCORE_X, HIGHSCORE_Y))
+    screen.blit(FONT.render(f"HIGHSCORE   {HighScore}", 0, C_WHITE), (HIGHSCORE_X, HIGHSCORE_Y))
 
 def draw_game_over(screen):
     screen.fill(C_BLACK)
-    screen.blit(FONT_2.render("Game Over", 0, C_WHITE), (CENTRAL_POS_X-80, HEIGHT-BOTTOM_OFFSET))
-    screen.blit(FONT.render(F"SCORE   {score}", 0, C_WHITE), (SCORE_X, SCORE_Y))
+    screen.blit(FONT_2.render("Game Over", 0, C_WHITE), (GAME_OVER_TEXT_X, GAME_OVER_TEXT_Y))
+    screen.blit(FONT.render(F"SCORE   {score}", 0, C_WHITE), (FINAL_SCORE_TEXT_X, FINAL_SCORE_TEXT_Y))
+    screen.blit(FONT.render("Press R to restart", 0, C_WHITE), (HELP_TEXT_X+12, HELP_TEXT_Y+60))
 
 def draw_pause_symbol(screen):
     screen.blit(FONT.render("PAUSED", 0, C_WHITE), (PAUSE_X, PAUSE_Y))
@@ -485,8 +489,6 @@ def main():
     player1 = player()
     
     change_current_shape()
-    
-    GameOver = False
     
     current_state = GameStates.MainMenu
 
@@ -574,6 +576,7 @@ def main():
 
 #-------------------GAMEOVER MENU--------------------------------------------------------
             case GameStates.GameOverMenu:
+                set_new_highscore(score)
                 draw_game_over(WIN)
                 pygame.display.update()
 
