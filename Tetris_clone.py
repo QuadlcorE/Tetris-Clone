@@ -46,7 +46,8 @@ PLAY_WIDTH = BLOCK_HEIGHT *X_SQUARES
 PLAY_HEIGHT = BLOCK_HEIGHT*Y_SQUARES
 
 LEFT_OFFSET, RIGHT_OFFSET, TOP_OFFSET, BOTTOM_OFFSET = 50, 50, 70, 50
-CENTRAL_POS = WIDTH/2
+CENTRAL_POS_X = WIDTH/2
+CENTRAL_POS_Y = HEIGHT/2
 
 PLAY_AREA = (LEFT_OFFSET, TOP_OFFSET, 
              LEFT_OFFSET, PLAY_HEIGHT+TOP_OFFSET, 
@@ -56,6 +57,8 @@ FPS = 25
 
 POINTS = 5
 
+HIGHSCORE = 5
+
 C_WHITE = pygame.Color("white")
 C_BLACK = pygame.Color("black")
 
@@ -63,8 +66,14 @@ DROPPED = pygame.USEREVENT + 1
 
 FONT = pygame.font.Font(os.path.join("ARCADECLASSIC.TTF"), 16)
 FONT_2 = pygame.font.Font(os.path.join("ARCADECLASSIC.TTF"), 32)
+FONT_3 = pygame.font.Font(os.path.join("ARCADECLASSIC.TTF"), 64)
+
 SCORE_X, SCORE_Y = WIDTH-RIGHT_OFFSET-10, TOP_OFFSET+20
-PAUSE_X, PAUSE_Y = WIDTH-RIGHT_OFFSET-20, TOP_OFFSET
+PAUSE_X, PAUSE_Y = WIDTH-RIGHT_OFFSET-10, 20
+HIGHSCORE_X, HIGHSCORE_Y = 20, 30
+MAIN_MENU_TEXT_X, MAIN_MENU_TEXT_Y = CENTRAL_POS_X-50, CENTRAL_POS_Y-30
+HELP_TEXT_X, HELP_TEXT_Y = LEFT_OFFSET, CENTRAL_POS_Y+40
+FINAL_SCORE_TEXT_X, FINAL_SCORE_TEXT_Y = CENTRAL_POS_X, CENTRAL_POS_Y
 
 S_S = [[0, 1, 1],
        [1, 1, 0],
@@ -190,6 +199,53 @@ def clear_complete_grids():
     return False
     ...                
 
+def reset_grid():
+    global grid, player_grid
+    grid = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 1
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 2
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 3
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 4
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 5
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 6
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 7
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 8
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 9
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 10
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 11
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 12
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 13
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 14
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 15
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 16
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 17
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 18
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 19
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 20
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],   # 21
+            ]
+
+    player_grid =  [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 1
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 2
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 3
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 4
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 5
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 6
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 7
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 8
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 9
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 10
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 11
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 12
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 13
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 14
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 15
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 16
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 17
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 18
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 19
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],   # 20
+                    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],   # 21
+                    ]
 
 #------------------SHAPE FUNCTIONS----------------------------
 shapes = [S_Z, S_S, S_L, S_J, S_I, S_O, S_T]
@@ -212,7 +268,14 @@ class player:
         self.shape = get_random_shape()
         self.counter = 0
         self.colided = False
-        
+
+    def player_reset(self):
+        self.x = grid_start[0]
+        self.y = grid_start[1]
+        self.active = True
+        self.shape = get_random_shape()
+        self.counter = 0
+        self.colided = False    
     
     def player_update(self):
         if self.active:
@@ -280,7 +343,6 @@ class player:
 
     def game_over(self, screen):
         if self.player_pos_check_bottom() == False:
-            draw_game_over(screen)
             return True
         return False
         
@@ -327,6 +389,10 @@ class player:
 multiplier = 1
 score = 0
 
+def reset_score():
+    global score
+    score = 0
+
 def increase_score(multiplier=1):
     global score 
     score += multiplier*POINTS
@@ -371,12 +437,27 @@ def draw_play_area(screen):
 def draw_score(screen):
     screen.blit(FONT.render("SCORE", 0, C_WHITE), (SCORE_X, SCORE_Y))
     screen.blit(FONT.render(str(score), 0, C_WHITE), (SCORE_X, SCORE_Y+20))
-    
+
+def draw_highscore(screen):
+    screen.blit(FONT.render(f"HIGHSCORE   {HIGHSCORE}", 0, C_WHITE), (HIGHSCORE_X, HIGHSCORE_Y))
+
 def draw_game_over(screen):
-    screen.blit(FONT_2.render("Game Over", 0, C_WHITE), (CENTRAL_POS-80, HEIGHT-BOTTOM_OFFSET))
+    screen.fill(C_BLACK)
+    screen.blit(FONT_2.render("Game Over", 0, C_WHITE), (CENTRAL_POS_X-80, HEIGHT-BOTTOM_OFFSET))
+    screen.blit(FONT.render(F"SCORE   {score}", 0, C_WHITE), (SCORE_X, SCORE_Y))
 
 def draw_pause_symbol(screen):
-    screen.blit(FONT_2.render("PAUSED", 0, C_WHITE), (PAUSE_X, PAUSE_Y))
+    screen.blit(FONT.render("PAUSED", 0, C_WHITE), (PAUSE_X, PAUSE_Y))
+
+def draw_main_menu(screen): 
+    screen.fill(C_BLACK)
+
+    screen.blit(FONT_2.render("TETRIS", 0, C_WHITE), (MAIN_MENU_TEXT_X, MAIN_MENU_TEXT_Y))
+    screen.blit(FONT.render("Press Space to start", 0, C_WHITE), (HELP_TEXT_X+7, HELP_TEXT_Y))
+    screen.blit(FONT.render("Use the arrow keys to move", 0, C_WHITE), (HELP_TEXT_X-15, HELP_TEXT_Y+20))
+    screen.blit(FONT.render("Press P to pause the game", 0, C_WHITE), (HELP_TEXT_X-9, HELP_TEXT_Y+40))
+    screen.blit(FONT.render("Press R to restart", 0, C_WHITE), (HELP_TEXT_X+12, HELP_TEXT_Y+60))
+
 #---------------------SPEED FUNCTIONS--------------------------
 
 timer = 1
@@ -407,14 +488,13 @@ def main():
     
     GameOver = False
     
-    current_state = GameStates.GamePlay
+    current_state = GameStates.MainMenu
 
     # Main game loop
-    while GameOver == False:
+    while True:
        match current_state:
+#---------------GAME PLAY LOGIC----------------------------------------------------------           
             case GameStates.GamePlay:
-
-#---------------GAME PLAY LOGIC----------------------------------------------------------
                 draw_play_area(WIN)    
                 
                 for event in pygame.event.get():
@@ -429,9 +509,12 @@ def main():
                             player1.move_down()
                         if event.key == pygame.K_p:
                             current_state = GameStates.PauseMenu
-                        if event.key == pygame.K_SPACE:
-                            print(grid)
+                        if event.key == pygame.K_r:
+                            reset_grid()
+                            reset_score()
+                            player1.player_reset()
                             ...
+
                     if event.type == DROPPED:
                         increase_speed()
                         multiplier = 1
@@ -439,8 +522,7 @@ def main():
                         grid_to_player_grid()
                         player1 = player()
                         if player1.game_over(WIN) == True:
-                            pygame.display.update()
-                            GameOver = True
+                            current_state = GameStates.GameOverMenu
                     
                     if event.type == pygame.QUIT:
                         exit()
@@ -453,14 +535,25 @@ def main():
                 draw_player_grid(WIN)
                 drop_grid(clear_complete_grids())
                 draw_score(WIN)
+                draw_highscore(WIN)
                 clock.tick(FPS)
                 
                 pygame.display.update()
 
+#---------------MAIN MENU LOGIC----------------------------------------------------------
             case GameStates.MainMenu:
+               draw_main_menu(WIN)
+               pygame.display.update()
+
+               for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                       exit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_SPACE:
+                            current_state = GameStates.GamePlay
                ...
                
-#-------------------PAUSE MENU-------------------------------------
+#-------------------PAUSE MENU-----------------------------------------------------------
             case GameStates.PauseMenu:
                draw_pause_symbol(WIN)
                pygame.display.update()
@@ -479,13 +572,23 @@ def main():
                
                state_pausemenu()
 
+#-------------------GAMEOVER MENU--------------------------------------------------------
             case GameStates.GameOverMenu:
-               state_gameovermenu()
+                draw_game_over(WIN)
+                pygame.display.update()
 
-    while True:
-        for  event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:
+                            reset_grid()
+                            reset_score()
+                            player1.player_reset()
+                            current_state = GameStates.GamePlay
+                        
+                    if event.type == pygame.QUIT:
+                        exit()
+
+                state_gameovermenu()
 
 if __name__ == "__main__":
     main()
